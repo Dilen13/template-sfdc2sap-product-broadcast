@@ -37,9 +37,11 @@ public class BusinessLogicIT extends AbstractTemplateTestCase {
 	private static final String KEY_LAST_MODIFIED_DATE = "LastModifiedDate";
 	private static final String KEY_ID = "Id";
 	private static final String KEY_NAME = "Name";
+	private static final String KEY_CODE = "ProductCode";
 	
 	private static final String POLL_FLOW_NAME = "triggerFlow";
 	private static final String PRODUCT_NAME = "Product Test Name";
+	private static final String PRODUCT_CODE = "TestSF2SAP";
 	
 	private static final Logger LOGGER = LogManager.getLogger(BusinessLogicIT.class);
 	
@@ -71,12 +73,12 @@ public class BusinessLogicIT extends AbstractTemplateTestCase {
 	public void tearDown() throws Exception {
 		stopFlowSchedulers(POLL_FLOW_NAME);
 		// delete previously created product from DB by matching ID
-		final Map<String, Object> acc = new HashMap<String, Object>();
-		acc.put(KEY_NAME, product.get(KEY_NAME));
-		acc.put(KEY_ID, product.get(KEY_ID));
+		final Map<String, Object> prod = new HashMap<String, Object>();
+		prod.put(KEY_NAME, product.get(KEY_NAME));
+		prod.put(KEY_ID, product.get(KEY_ID));
 
-		deleteMaterialFromSap(acc);
-		deleteProductFromSalesforce(acc);
+		deleteMaterialFromSap(prod);
+		deleteProductFromSalesforce(prod);
 	}
 
 	@Test
@@ -116,6 +118,7 @@ public class BusinessLogicIT extends AbstractTemplateTestCase {
 	private Map<String, Object> createSalesforceProduct() throws Exception {
 		final Map<String, Object> product = new HashMap<String, Object>();
 		product.put(KEY_NAME, PRODUCT_NAME + System.currentTimeMillis());
+		product.put(KEY_CODE, PRODUCT_CODE + System.currentTimeMillis());
 		
 		final MuleEvent event = runFlow("createProductsInSalesforceFlow", Collections.singletonList(product));
 		final List<?> result = (List<?>) event.getMessage().getPayload();
@@ -134,7 +137,7 @@ public class BusinessLogicIT extends AbstractTemplateTestCase {
 	}
 
 	private void waitForPollToRun() {
-		LOGGER.info("Waiting for poll to run ones...");
+		LOGGER.info("Waiting for poll to run once...");
 		pollProber.check(new ListenerProbe(pipelineListener));
 		LOGGER.info("Poll flow done");
 	}

@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <mule xmlns:batch="http://www.mulesoft.org/schema/mule/batch" 
-xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" 
-xmlns="http://www.mulesoft.org/schema/mule/core" 
-xmlns:sfdc="http://www.mulesoft.org/schema/mule/sfdc"
-xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" 
-xmlns:spring="http://www.springframework.org/schema/beans" 
-version="EE-3.6.2" 
-xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+	xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" 
+	xmlns="http://www.mulesoft.org/schema/mule/core" 
+	xmlns:sfdc="http://www.mulesoft.org/schema/mule/sfdc"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" 
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
 http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/sfdc http://www.mulesoft.org/schema/mule/sfdc/current/mule-sfdc.xsd
 http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd
@@ -26,7 +25,7 @@ Here you should not:
         <poll doc:name="fireup Product Synchronization">
             <fixed-frequency-scheduler frequency="${poll.frequencyMillis}" startDelay="${poll.startDelayMillis}"/>
             <watermark variable="salesforceLastQueryDate" default-expression="${watermark.default.expression}" selector="MAX" selector-expression="#[payload.LastModifiedDate]"/>
-            <sfdc:query config-ref="Salesforce" query="SELECT Id, Description, Name, LastModifiedById, LastModifiedDate, ProductCode FROM Product2 WHERE LastModifiedDate &gt; #[flowVars['salesforceLastQueryDate']] ORDER BY LastModifiedDate ASC LIMIT 200" fetchSize="${page.size}" doc:name="Quey Products from Salesforce"/>
+            <sfdc:query config-ref="Salesforce" query="dsql:SELECT Id, Description, Name, LastModifiedById, LastModifiedDate, ProductCode FROM Product2 WHERE LastModifiedDate &gt; #[flowVars.salesforceLastQueryDate] AND ProductCode &lt;&gt; null ORDER BY LastModifiedDate ASC LIMIT 200" fetchSize="${page.size}" doc:name="Query Products from Salesforce"/>
         </poll>
         <logger message="Products: #[payload]" level="INFO" doc:name="log created/updated Products"/>
         <batch:execute name="syncProductsBatch" doc:name="trigger syncProductsBatch"/>
